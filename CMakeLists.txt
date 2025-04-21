@@ -7,6 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include_directories(~/vcpkg/installed/x64-linux-dynamic/include)
 link_directories(~/vcpkg/installed/x64-linux-dynamic/lib)
 
-add_executable(archiver main.cpp ./src/App.cpp)
+add_executable(archiver main.cpp ./src/Execution.cpp ./src/Logic.cpp ./src/Validation.cpp)
 
 target_link_libraries(archiver PRIVATE archive)
