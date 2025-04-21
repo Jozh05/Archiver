@@ -13,7 +13,7 @@ void App::compressFile(const std::string& inputFile, const std::string& archiveN
     archive_write_set_format_pax_restricted(arch);
     archive_write_add_filter_gzip(arch);
 
-    if (archive_write_open_filename(arch, (dir / archiveName).c_str()) != ARCHIVE_OK) {
+    if (archive_write_open_filename(arch, (dir / std::filesystem::path(archiveName)).generic_string().c_str()) != ARCHIVE_OK) {
         std::string errorMessage = archive_error_string(arch);
         archive_write_free(arch);
         throw std::runtime_error(errorMessage);
@@ -33,7 +33,7 @@ void App::compressFile(const std::string& inputFile, const std::string& archiveN
         throw std::runtime_error("Cannot open input file: " + inputFile);
     }
 
-    archive_entry_set_pathname(entry, path.filename().c_str());
+    archive_entry_set_pathname(entry, path.filename().string().c_str());
     archive_entry_set_filetype(entry, AE_IFREG);
     archive_entry_set_perm(entry, 0644);
     archive_entry_set_size(entry, std::filesystem::file_size(path));
