@@ -13,13 +13,6 @@ enum class OperationType {
     DECOMPRESS
 };
 
-enum class FreeCase {
-    CompressArchive,
-    CompressEntry,
-    Decompress
-};
-
-
 class App {
 
 public:
