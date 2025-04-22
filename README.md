@@ -13,7 +13,7 @@ git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
 ./bootstrap-vcpkg.sh
 ./vcpkg integrate install
-./vcpkg install libarchive
+./vcpkg install libarchive:x64-linux-dynamic
 ```
 
 Также можно собрать библиотеку из исходников:
