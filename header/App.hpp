@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <string>
 #include <stdexcept>
+#include <atomic>
+#include <csignal>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -14,6 +16,12 @@ enum class OperationType {
 };
 
 class App {
+
+private:
+    static std::atomic<bool> stopFlag;
+
+    inline static archive* arch = nullptr;
+    inline static archive_entry* entry = nullptr;
 
 public:
 
@@ -33,6 +41,9 @@ private:
     static std::string validateStringAsFileName(char* str);
     static std::string validateStringAsDirName(char* str);
 
+    static void checkSignal(OperationType, const std::filesystem::path& outputPath);
+
 public:
+    static void signalHandler(int);
     static int execute(int argc, char** argv);
 };
