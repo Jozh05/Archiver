@@ -16,9 +16,10 @@ enum class OperationType {
 
 class App {
 
-private:
+public:
     static std::atomic<bool> stopFlag;
 
+private:
     inline static archive* arch = nullptr;
     inline static archive_entry* entry = nullptr;
 
