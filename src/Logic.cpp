@@ -1,6 +1,5 @@
 #include "../header/App.hpp"
 
-
 #ifdef _WIN32
 #include <windows.h>
 
@@ -24,6 +23,7 @@ void App::setupSignalHandler() {
 #include <csignal>
 
 void App::signalHandler(int) {
+    std::cout << "\nCtrl+C pressed, stopping the app...\n";
     App::stopFlag = true;
 }
 
@@ -87,7 +87,7 @@ void App::compressFile(const std::string& inputFile, const std::string& archiveN
     char buffer[8192];
     checkSignal(OperationType::COMPRESS, outputPath);
     while (file.read(buffer, sizeof(buffer)) || file.gcount() > 0) {
-
+           
         checkSignal(OperationType::COMPRESS, outputPath);
 
         if (archive_write_data(arch, buffer, file.gcount()) < 0) {
@@ -97,7 +97,6 @@ void App::compressFile(const std::string& inputFile, const std::string& archiveN
         }
     }
 
-
     archive_entry_free(entry);
     archive_write_close(arch);
     archive_write_free(arch);
@@ -105,7 +104,7 @@ void App::compressFile(const std::string& inputFile, const std::string& archiveN
 
 
 void App::decompressFile(const std::string& archiveFile, const std::string& outputDir) {
-    archive* arch = archive_read_new();
+    arch = archive_read_new();
     if (!arch) {
         archive_read_free(arch);
         throw std::runtime_error("Failed to create archive reader");
@@ -120,7 +119,6 @@ void App::decompressFile(const std::string& archiveFile, const std::string& outp
         archive_read_free(arch);
         throw std::runtime_error(errorMessage);
     }
-    archive_entry* entry;
 
     while (archive_read_next_header(arch, &entry) == ARCHIVE_OK) {
         std::string name = archive_entry_pathname(entry);
@@ -133,10 +131,7 @@ void App::decompressFile(const std::string& archiveFile, const std::string& outp
             archive_read_free(arch);
             throw std::runtime_error(errorMessage);
         }
-        if (stopFlag) {
-            archive_read_free(arch);
-            std::filesystem::remove(outPath);
-        }
+        checkSignal(OperationType::DECOMPRESS, outPath);
     }
 
     archive_read_close(arch);
@@ -153,6 +148,13 @@ void App::checkSignal(OperationType operationType, const std::filesystem::path& 
             archive_write_free(arch);
             std::filesystem::remove(outputPath);
             throw std::runtime_error("Archiving was interrupted by the user");
+        }
+        break;
+    case OperationType::DECOMPRESS:
+        if (stopFlag) {
+            archive_read_free(arch);
+            std::filesystem::remove(outputPath);
+            throw std::runtime_error("Extracting was interrupted by the user");
         }
     default:
         break;
