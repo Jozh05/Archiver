@@ -84,7 +84,7 @@ void App::compressFile(const std::string& inputFile, const std::string& archiveN
         throw std::runtime_error(archive_error_string(arch));
     }
 
-    char buffer[8192];
+    char buffer[32768];
     checkSignal(OperationType::COMPRESS, outputPath);
     while (file.read(buffer, sizeof(buffer)) || file.gcount() > 0) {
            
