@@ -5,7 +5,6 @@
 #include <string>
 #include <stdexcept>
 #include <atomic>
-#include <csignal>
 
 #include <archive.h>
 #include <archive_entry.h>
@@ -43,7 +42,9 @@ private:
 
     static void checkSignal(OperationType, const std::filesystem::path& outputPath);
 
-public:
     static void signalHandler(int);
+
+public:
+    static void setupSignalHandler();
     static int execute(int argc, char** argv);
 };

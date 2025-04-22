@@ -1,8 +1,39 @@
 #include "../header/App.hpp"
 
-void App::signalHandler(int) {
-    stopFlag = true;
+
+#ifdef _WIN32
+#include <windows.h>
+
+// Обработчик сигнала для Windows
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType) {
+    if (fdwCtrlType == CTRL_C_EVENT) {
+        std::cout << "\nCtrl+C pressed, stopping the app...\n";
+        App::stopFlag = true;
+        return TRUE;
+    }
+    return FALSE;
 }
+
+void App::setupSignalHandler() {
+    if (!SetConsoleCtrlHandler(CtrlHandler, TRUE)) {
+        std::cerr << "Failed to set control handler\n";
+    }
+}
+
+#else
+#include <csignal>
+
+void App::signalHandler(int) {
+    App::stopFlag = true;
+}
+
+void App::setupSignalHandler() {
+    std::signal(SIGINT, App::signalHandler);
+}
+#endif
+
+
+
 
 void App::compressFile(const std::string& inputFile, const std::string& archiveName) {
 
@@ -127,3 +158,4 @@ void App::checkSignal(OperationType operationType, const std::filesystem::path& 
         break;
     }
 }
+
